@@ -44,7 +44,13 @@ Hopefully, the base password should be very hard to find, given the generated
 password. So, if your account is hacked in some website (and if this tool
 is not so commonly used...), the disater should be contained.
 
-## Installing
+## Building
+
+### Generate `dprpwg_config.h`
+
+TODO
+
+### Now, proper building
 
 TODO
 
