@@ -31,48 +31,48 @@
 
 /* Some internal functions declarations */
 
-/* Min and Max */
-static inline int max(int a, int b)
+/* Min and Max. Mostly used for size_t values */
+static inline size_t max(size_t a, size_t b)
 {
   return a > b ? a : b;
 }
 
-static inline int min(int a, int b)
+static inline size_t min(size_t a, size_t b)
 {
   return a < b ? a : b;
 }
 
 /* Check if a password contains all the required symbol categories */
-static int check_password(const char* password, int flags);
+static int check_password(const char* password, unsigned int flags);
 
 /* Check if a password contains one of the symbol of a given domain */
 static int check_password_domain(const char* password, const char* domain);
 
 /* The main function of this tool. Generate a password. */
-void generate_password(const char *password,
-                       const char *domain,
-                       const char *year,
-                       int        fixed_size,
-                       char       **new_passwd,
-                       int        flags)
+void generate_password(const char   *password,
+                       const char   *domain,
+                       const char   *year,
+                       size_t       fixed_size,
+                       char         **new_passwd,
+                       unsigned int flags)
 {
 
   /* ---- Variable declarations ---- */
   /* This will be the symbol domain list and its size */
   char output_domain[OUTPUT_DOMAIN_MAXLENGTH];
-  int output_domain_size;
+  size_t output_domain_size;
 
   /* Aliases for various string lengths */
-  unsigned int password_length, domain_length, year_length, output_length;
+  size_t password_length, domain_length, year_length, output_length;
 
   /* Temporary hash used during generation */
   uint16_t* password_hash;
 
   /* Cursors needed when reading the inputs */
-  unsigned int pwd_seek, domain_seek, year_seek, output_seek;
+  size_t pwd_seek, domain_seek, year_seek, output_seek;
 
   /* Control the number of iteration */
-  unsigned int limit, iteration;
+  size_t limit, iteration;
   /* ---- End of variable declarations ---- */
 
   /* No symbol category selected? empty password, then */
@@ -123,15 +123,23 @@ void generate_password(const char *password,
     output_length = fixed_size;
   } else {
     /*
-     * Oh yeah, that arbitrary. The size should be as follow:
+     * Oh yeah, that's arbitrary. The size should be as follow:
      * - pre 2000:  12
-     * - 2000-2004: 13
-     * - 2005-2009: 14
-     * - 2010-2015: 15
-     * - 2015-2020: 16
+     * - 2000-2004: 12
+     * - 2005-2009: 13
+     * - 2010-2014: 14
+     * - 2015-2020: 15
      * ... and I thing you get it.
      */
-    output_length = max(OUTPUT_MIN_LENGTH, min(OUTPUT_MAX_LENGTH, 12 + (strtol(year, NULL, 10) - 2000) / 5));
+    int year_value = atoi(year);
+
+    if (year_value < 2000) {
+      output_length = 12;
+    } else {
+      output_length = max(OUTPUT_MIN_LENGTH,
+                          min(OUTPUT_MAX_LENGTH,
+                              12 + (unsigned int)(year_value - 2000) / 5));
+    }
   }
 
   /* Memory allocation for temporary hash and output password */
@@ -225,7 +233,7 @@ void generate_password(const char *password,
 }
 
 /* Check the password contains all requested symbol categories */
-static int check_password(const char* password, int flags)
+static int check_password(const char* password, unsigned int flags)
 {
 
   if (flags & FLAG_DIG_AVAIL) {
@@ -258,7 +266,7 @@ static int check_password(const char* password, int flags)
 /* Check if 'password' contains at least one symbol from 'domain' */
 static int check_password_domain(const char* password, const char* domain)
 {
-  int password_length, password_seek, domain_length, domain_seek;
+  size_t password_length, password_seek, domain_length, domain_seek;
 
   password_length = strlen(password);
   domain_length = strlen(domain);
@@ -276,13 +284,13 @@ static int check_password_domain(const char* password, const char* domain)
 
 
 /* Compute a password strength */
-double get_password_strength(const char* password, int year, int flags)
+double get_password_strength(const char* password, unsigned int year, unsigned int flags)
 {
   int symbols_count_table[OUTPUT_DOMAIN_MAXLENGTH];
   double entropy = 0.0;
-  int password_length;
-  int table_seek, password_seek;
-  int alphabet_size = 0;
+  size_t password_length;
+  size_t table_seek, password_seek;
+  size_t alphabet_size = 0;
 
   if (flags & FLAG_DIG_AVAIL) {
     alphabet_size += strlen(OUTPUT_DIG);
@@ -335,5 +343,5 @@ double get_password_strength(const char* password, int year, int flags)
    * the probable increasing computing power of hackers.
    * Unit is completely arbitrary. */
   return entropy * ((double)password_length / (double)(max(year / 5 - 388, 12)))
-         * log2(alphabet_size) / (double)OVERKILL_PWD_STRENGTH;
+         * log2((double)alphabet_size) / OVERKILL_PWD_STRENGTH;
 }

@@ -9,7 +9,7 @@ else
 	GTKCFLAGS=$(shell pkg-config --cflags gtk+-2.0)
 endif
 
-CFLAGS:=-Wall -Wextra -O2
+CFLAGS:=-Wall -Wextra -Wconversion -O2
 LDFLAGS:=-s -lm
 
 CC=gcc

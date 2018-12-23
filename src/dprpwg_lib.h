@@ -24,6 +24,8 @@
 #ifndef DPRPWG_LIB_H
 #define DPRPWG_LIB_H
 
+#include <stddef.h> /* For size_t definition */
+
 /* Symbol categories */
 #define OUTPUT_LOW "azertyuiopqsdfghjklmwxcvbn"   /* Lower case letters */
 #define OUTPUT_UPP "FGHJKLMWXCVBNAZERTYUIOPQSD"   /* Upper case letters */
@@ -31,24 +33,24 @@
 #define OUTPUT_SYM "()[]-_{}=+!:/;.,?"            /* Symbols */
 
 /* Available symbol list, max length. 256 = ASCII table length */
-#define OUTPUT_DOMAIN_MAXLENGTH   256
+#define OUTPUT_DOMAIN_MAXLENGTH   256U
 
 /* Min and max password length (ignored if manual length is required) */
-#define OUTPUT_MIN_LENGTH 12
-#define OUTPUT_MAX_LENGTH 256
+#define OUTPUT_MIN_LENGTH 12U
+#define OUTPUT_MAX_LENGTH 256U
 
 /* Output symbol configuration flags */
-#define FLAG_LOW_AVAIL  (1<<0)
-#define FLAG_UPP_AVAIL  (1<<1)
-#define FLAG_DIG_AVAIL  (1<<2)
-#define FLAG_SYM_AVAIL  (1<<3)
+#define FLAG_LOW_AVAIL  (1U<<0)
+#define FLAG_UPP_AVAIL  (1U<<1)
+#define FLAG_DIG_AVAIL  (1U<<2)
+#define FLAG_SYM_AVAIL  (1U<<3)
 
 /* Maximum number of iteration to find a correct password, containing
  * all the required symbol types */
 #define ITERATION_MAX 65536
 
 /* Completery arbitrary value for a "impossible to crack" password strength */
-#define OVERKILL_PWD_STRENGTH 30
+#define OVERKILL_PWD_STRENGTH 30.0
 
 /* That would be in "glib", won't include it for that */
 #ifndef FALSE
@@ -89,12 +91,12 @@
  * you don't need it anymore. Oh, and probably to memset() just before,
  * maybe you don't want to have a password somewhere in memory...
  */
-void generate_password(const char *password,
-                       const char *domain,
-                       const char *year,
-                       int        fixed_size,
-                       char       **new_passwd,
-                       int        flags);
+void generate_password(const char   *password,
+                       const char   *domain,
+                       const char   *year,
+                       size_t       fixed_size,
+                       char         **new_passwd,
+                       unsigned int flags);
 
 /**
  * \brief Password strength computation
@@ -109,6 +111,6 @@ void generate_password(const char *password,
  * be considered too weak if the value is lower than 0.5, and excellent
  * if the value is higher than 0.9.
  */
-double get_password_strength(const char* password, int year, int flags);
+double get_password_strength(const char* password, unsigned int year, unsigned int flags);
 
 #endif /* DPRPWG_LIB_H */

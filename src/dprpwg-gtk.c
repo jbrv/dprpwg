@@ -80,7 +80,7 @@ void clean_entry_buffer(GtkEntry *gtk_entry)
    * Get the internal widget buffer, and memset() it.
    */
   char* buffer = NULL;
-  int size = 0;
+  size_t size = 0;
 
   buffer = (char*) gtk_entry_get_text(gtk_entry);
   size = gtk_entry_get_text_length(gtk_entry) * sizeof(gchar);
@@ -152,8 +152,8 @@ void cb_generate(GtkWidget *widget, gpointer data)
   char *new_passwd = NULL;
   char *password_strength_str;
   double password_strength;
-  int flags;
-  int fixed_size = -1;
+  unsigned int flags;
+  size_t fixed_size = 0;
 
   UNUSED_PARAM(widget);
 
@@ -184,7 +184,7 @@ void cb_generate(GtkWidget *widget, gpointer data)
 
   /* Get the fixed size input if the fixed size option is enabled */
   if (gtk_widget_get_sensitive(generate_data->text_fixed_size)) {
-    fixed_size = atoi(gtk_entry_get_text(GTK_ENTRY(generate_data->text_fixed_size)));
+    fixed_size = (unsigned int) atoi(gtk_entry_get_text(GTK_ENTRY(generate_data->text_fixed_size)));
   }
 
   /* Generate the symbol category flags */
@@ -213,7 +213,7 @@ void cb_generate(GtkWidget *widget, gpointer data)
   gtk_entry_set_text(GTK_ENTRY(generate_data->text_newpasswd), new_passwd);
 
   /* Get password strength for display */
-  password_strength = get_password_strength(new_passwd, strtol(year, NULL, 10), flags);
+  password_strength = get_password_strength(new_passwd, (unsigned int) atoi(year), flags);
 
   /* TODO: Put this part elswhere. Or at least remove all the magic numbers */
   if (password_strength < 0.25) {
