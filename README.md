@@ -48,16 +48,73 @@ is not so commonly used...), the disater should be contained.
 
 ### Generate `dprpwg_config.h`
 
-TODO
+Here is the drawback of this tool: you will need to generate your own
+`dprpwg_config.h` file under `src/dprpwg_config.h`.
+Go check [`dprpwg_config.stub.h`](src/dprpwg_config.stub.h) for the syntax.
+
+So, write some numbers there, and keep it secret.
+Maybe. I don't know if it is important, actually...
+But I will not commit my *own* version of this file, so you will have
+to generate it.
 
 ### Now, proper building
 
-TODO
+A [`Makefile`](Makefile) is included to help buidling the tool. Only the
+`Makefile` is documented here. If you want to build the tool another way,
+help yourself ;)
+
+#### Build requirements
+
+For everything that use the Makefile:
+- make
+- gcc
+
+For the GTK+2 version:
+- pkg-config
+- GTK+ 2.24. Maybe a lower version works, but I will not test that.
+
+For the GTK+3 version *(experimental)*:
+- pkg-config
+- GTK+ 3. I don't know which version works.
+
+#### GTK+2 client
+
+By default, calling `make` will build the GTK+2 client under `bin/dprpwg-gtk`.
+
+#### GTK+3 client
+
+To generate the GTK+3 version, invoke `make GTKVERSION=3`.
+
+*Note this is highly experimental*.
+You'll get a lot of "deprecated"-style warnings at build time,
+but it builds and runs.
 
 ## Using
 
-TODO
+#### GTK+2/GTK+3 client
+
+Run `dprpwg-gtk`, and if things are correct, you should get something like that:
+
+![dprpwg-gtk screenshot](img/screenshot1.png)
+
+Enter your master password *twice*, a domain name, check the year is
+correct, and there you go:
+
+![dprpwg-gtk screenshot](img/screenshot2.png)
+
+Now use the generated password at your convenience.
+
+Note that the GTK client needs you to enter your master password twice.
+That's because if you use a generated password to register on a website,
+and you made a typo in the master password, you would not be able to
+retrieve your password ever again... So, doublecheck.
+
+You can configure how to generate the password: upper case letters, lower
+case letters, digits or symbols. You can also set the size if needed.
+Handy for *that* website which only takes a password of 8 digits
+(yes, I do have examples in mind...)
 
 ## License
 
-This tool is licensed under the MIT License - see the COPYING file for details
+This tool is licensed under the MIT License.
+See the [COPYING](COPYING) file for details
